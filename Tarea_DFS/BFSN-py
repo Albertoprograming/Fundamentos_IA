@@ -1,0 +1,100 @@
+configuracion_meta = [[1,2,3], [4, 5, 6], [7, 8, 0]]
+# Se pueden cambiar los valores, mientras que sea entre 0-8 y no se repita
+configuracion_inicial = [[1, 2, 3], [0, 4, 6], [7, 5, 8]]
+
+# Arreglo de matrices, asignacion de primera matriz
+configuraciones = [configuracion_inicial]
+
+# diccionario con informacion relacionada de la matriz. 
+# la matriz y su atributo comparten el mismo indice, el numero de indice se agrega a la cola
+atributos = {0:{"Nivel": 1, "Procedencia": 0,"Restriccion": 'Ninguna'}}
+
+# cada interacion solo interactua con una matriz
+# verifica si se llego a la meta, si no, visita sus vecinos, crea sus matrices con sus
+# atributos  relacionados y agrega el indice asociado a la cola,
+cola = 0
+numero = 1
+while configuracion_meta!=configuraciones[cola]:
+#for i in range(20):
+    # Obtener las coordenadas de '#'
+    for fila in range(3):
+        for columna in range(3):
+            if configuraciones[cola][fila][columna] == 0:
+                x = fila
+                y = columna
+                break
+    #visitar vecinos y agregar a cola
+    # Izquierda
+    if y>0 and atributos[cola]["Restriccion"]!='izquierda':
+        copia = [fila[:] for fila in configuraciones[cola]]
+        copia[x][y] = copia[x][y-1]
+        copia[x][y-1] = 0
+        configuraciones.append(copia)
+        atributos[numero] = {"Nivel": atributos[cola]["Nivel"]+1, "Procedencia": cola,"Restriccion": "derecha"}
+        print("numero de lista", numero)
+        for l in range(3):
+            print(configuraciones[numero][l])
+        print("\n")
+        numero += 1
+    # Arriba
+    if x>0 and atributos[cola]["Restriccion"]!='arriba':
+        copia = [fila[:] for fila in configuraciones[cola]]
+        copia[x][y] = copia[x-1][y]
+        copia[x-1][y] = 0
+        configuraciones.append(copia)
+        atributos[numero] = {"Nivel": atributos[cola]["Nivel"]+1, "Procedencia": cola,"Restriccion": "abajo"}
+        print("numero de lista", numero)
+        for l in range(3):
+            print(configuraciones[numero][l])
+        print("\n")
+        numero += 1
+     # derecha
+    if y<2 and atributos[cola]["Restriccion"]!='derecha':
+        copia = [fila[:] for fila in configuraciones[cola]]
+        copia[x][y] = copia[x][y+1]
+        copia[x][y+1] = 0
+        configuraciones.append(copia)
+        atributos[numero] = {"Nivel": atributos[cola]["Nivel"]+1, "Procedencia": cola,"Restriccion": 'izquierda'}
+        print("numero de lista", numero)
+        for l in range(3):
+            print(configuraciones[numero][l])
+        print("\n")
+        numero += 1
+    # abajo
+    if x<2 and atributos[cola]["Restriccion"]!='abajo':
+        copia = [fila[:] for fila in configuraciones[cola]]
+        copia[x][y] = copia[x+1][y]
+        copia[x+1][y] = 0
+        configuraciones.append(copia)
+        atributos[numero] = {"Nivel": atributos[cola]["Nivel"]+1, "Procedencia": cola,"Restriccion": "arriba"}
+        print("numero de lista", numero)
+        for l in range(3):
+            print(configuraciones[numero][l])
+        print("\n")
+        numero += 1
+    cola+=1
+for i in range(cola+1):
+    print("Matriz visitada", i)
+    for j in range(3):
+        print(configuraciones[i][j])
+    print(f"{atributos[i]['Nivel']}, {atributos[i]['Procedencia']}, {atributos[i]['Restriccion']}")
+
+# Encuentra el índice de configuracion_meta en configuraciones
+indice_configuracion_meta = configuraciones.index(configuracion_meta)
+
+# Construye la ruta desde configuracion_inicial hasta configuracion_meta
+tr = cola
+ruta = [cola]
+while atributos[tr]["Procedencia"] != 0:
+    ruta.append(atributos[tr]["Procedencia"])
+    tr = atributos[tr]["Procedencia"]
+ruta.append(0)
+
+# Imprime la ruta en orden inverso para mostrarla desde configuracion_inicial hasta configuracion_meta
+print("\n\nRuta desde configuracion_inicial a configuracion_meta:")
+for indice in reversed(ruta):
+    print(f"Nivel: {atributos[indice]['Nivel']}, Procedencia: {atributos[indice]['Procedencia']}, Restriccion: {atributos[indice]['Restriccion']}")
+    for fila in configuraciones[indice]:
+        print(f"   {fila}")
+
+print("fin")
